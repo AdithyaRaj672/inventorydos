@@ -86,7 +86,7 @@ export class ProductListComponent implements OnInit {
       if (result) {
         this.inventoryService.deleteProduct(product.id).subscribe({
           next: () => {
-            this.products = this.products.filter(p => p.id !== product.id);
+            this.loadProducts();
             this.snackBar.open('Product deleted successfully', 'Close', { duration: 3000 });
           },
           error: (err) => {

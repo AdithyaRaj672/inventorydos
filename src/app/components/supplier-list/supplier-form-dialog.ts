@@ -64,8 +64,15 @@ import { Supplier } from '../../models/supplier.model';
       display: flex;
       flex-direction: column;
       gap: 16px;
-      min-width: 500px;
+      min-width: 300px;
+      max-width: 600px;
       padding: 16px 0;
+    }
+
+    @media (min-width: 768px) {
+      .supplier-form {
+        min-width: 500px;
+      }
     }
 
     .full-width {

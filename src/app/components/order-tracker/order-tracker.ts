@@ -100,7 +100,7 @@ export class OrderTrackerComponent implements OnInit {
       if (result) {
         this.inventoryService.deleteOrder(order.id).subscribe({
           next: () => {
-            this.orders = this.orders.filter(o => o.id !== order.id);
+            this.loadOrders();
             this.snackBar.open('Order deleted successfully', 'Close', { duration: 3000 });
           },
           error: (err) => {

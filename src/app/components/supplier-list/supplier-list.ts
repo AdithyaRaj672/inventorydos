@@ -121,7 +121,7 @@ export class SupplierListComponent implements OnInit {
       if (result) {
         this.inventoryService.deleteSupplier(supplier.id).subscribe({
           next: () => {
-            this.suppliers = this.suppliers.filter(s => s.id !== supplier.id);
+            this.loadSuppliers();
             this.snackBar.open('Supplier deleted successfully', 'Close', { duration: 3000 });
           },
           error: (err) => {
