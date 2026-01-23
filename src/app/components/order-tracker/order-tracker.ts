@@ -8,8 +8,10 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { InventoryService } from '../../services/inventory.service';
 import { Order } from '../../models/order.model';
+import { ConfirmDialogComponent } from '../shared/confirm-dialog';
 
 @Component({
   selector: 'app-order-tracker',
@@ -23,7 +25,8 @@ import { Order } from '../../models/order.model';
     MatProgressSpinnerModule,
     MatSnackBarModule,
     MatTabsModule,
-    MatTooltipModule
+    MatTooltipModule,
+    MatDialogModule
   ],
   templateUrl: './order-tracker.html',
   styleUrl: './order-tracker.css'
@@ -31,6 +34,7 @@ import { Order } from '../../models/order.model';
 export class OrderTrackerComponent implements OnInit {
   private inventoryService = inject(InventoryService);
   private snackBar = inject(MatSnackBar);
+  private dialog = inject(MatDialog);
 
   orders: Order[] = [];
   displayedColumns: string[] = ['id', 'productId', 'quantity', 'orderDate', 'expectedDelivery', 'supplier', 'status', 'actions'];
@@ -82,18 +86,30 @@ export class OrderTrackerComponent implements OnInit {
   }
 
   deleteOrder(order: Order): void {
-    if (confirm(`Are you sure you want to delete order #${order.id}?`)) {
-      this.inventoryService.deleteOrder(order.id).subscribe({
-        next: () => {
-          this.orders = this.orders.filter(o => o.id !== order.id);
-          this.snackBar.open('Order deleted successfully', 'Close', { duration: 3000 });
-        },
-        error: (err) => {
-          console.error('Error deleting order:', err);
-          this.snackBar.open('Failed to delete order', 'Close', { duration: 5000 });
-        }
-      });
-    }
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: {
+        title: 'Delete Order',
+        message: `Are you sure you want to delete order #${order.id}?`,
+        confirmText: 'Delete',
+        cancelText: 'Cancel'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.inventoryService.deleteOrder(order.id).subscribe({
+          next: () => {
+            this.orders = this.orders.filter(o => o.id !== order.id);
+            this.snackBar.open('Order deleted successfully', 'Close', { duration: 3000 });
+          },
+          error: (err) => {
+            console.error('Error deleting order:', err);
+            this.snackBar.open('Failed to delete order', 'Close', { duration: 5000 });
+          }
+        });
+      }
+    });
   }
 
   markAsDelivered(order: Order): void {

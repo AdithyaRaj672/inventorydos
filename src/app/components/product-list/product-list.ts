@@ -13,6 +13,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { InventoryService } from '../../services/inventory.service';
 import { Product } from '../../models/product.model';
 import { ProductFormDialogComponent } from './product-form-dialog';
+import { ConfirmDialogComponent } from '../shared/confirm-dialog';
 
 @Component({
   selector: 'app-product-list',
@@ -71,18 +72,30 @@ export class ProductListComponent implements OnInit {
   }
 
   deleteProduct(product: Product): void {
-    if (confirm(`Are you sure you want to delete ${product.name}?`)) {
-      this.inventoryService.deleteProduct(product.id).subscribe({
-        next: () => {
-          this.products = this.products.filter(p => p.id !== product.id);
-          this.snackBar.open('Product deleted successfully', 'Close', { duration: 3000 });
-        },
-        error: (err) => {
-          console.error('Error deleting product:', err);
-          this.snackBar.open('Failed to delete product', 'Close', { duration: 5000 });
-        }
-      });
-    }
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: {
+        title: 'Delete Product',
+        message: `Are you sure you want to delete ${product.name}?`,
+        confirmText: 'Delete',
+        cancelText: 'Cancel'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.inventoryService.deleteProduct(product.id).subscribe({
+          next: () => {
+            this.products = this.products.filter(p => p.id !== product.id);
+            this.snackBar.open('Product deleted successfully', 'Close', { duration: 3000 });
+          },
+          error: (err) => {
+            console.error('Error deleting product:', err);
+            this.snackBar.open('Failed to delete product', 'Close', { duration: 5000 });
+          }
+        });
+      }
+    });
   }
 
   getFilteredProducts(): Product[] {

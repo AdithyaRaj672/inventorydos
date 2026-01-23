@@ -11,6 +11,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { InventoryService } from '../../services/inventory.service';
 import { Supplier } from '../../models/supplier.model';
 import { SupplierFormDialogComponent } from './supplier-form-dialog';
+import { ConfirmDialogComponent } from '../shared/confirm-dialog';
 
 @Component({
   selector: 'app-supplier-list',
@@ -106,18 +107,30 @@ export class SupplierListComponent implements OnInit {
   }
 
   deleteSupplier(supplier: Supplier): void {
-    if (confirm(`Are you sure you want to delete ${supplier.name}?`)) {
-      this.inventoryService.deleteSupplier(supplier.id).subscribe({
-        next: () => {
-          this.suppliers = this.suppliers.filter(s => s.id !== supplier.id);
-          this.snackBar.open('Supplier deleted successfully', 'Close', { duration: 3000 });
-        },
-        error: (err) => {
-          console.error('Error deleting supplier:', err);
-          this.snackBar.open('Failed to delete supplier', 'Close', { duration: 5000 });
-        }
-      });
-    }
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: {
+        title: 'Delete Supplier',
+        message: `Are you sure you want to delete ${supplier.name}?`,
+        confirmText: 'Delete',
+        cancelText: 'Cancel'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.inventoryService.deleteSupplier(supplier.id).subscribe({
+          next: () => {
+            this.suppliers = this.suppliers.filter(s => s.id !== supplier.id);
+            this.snackBar.open('Supplier deleted successfully', 'Close', { duration: 3000 });
+          },
+          error: (err) => {
+            console.error('Error deleting supplier:', err);
+            this.snackBar.open('Failed to delete supplier', 'Close', { duration: 5000 });
+          }
+        });
+      }
+    });
   }
 }
 

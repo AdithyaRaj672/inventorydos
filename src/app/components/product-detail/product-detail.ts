@@ -1,6 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { ActivatedRoute, Router } from '@angular/router';
+import { CommonModule, Location } from '@angular/common';
+import { ActivatedRoute } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -26,14 +26,14 @@ import { Product } from '../../models/product.model';
 export class ProductDetailComponent implements OnInit {
   private inventoryService = inject(InventoryService);
   private route = inject(ActivatedRoute);
-  private router = inject(Router);
+  private location = inject(Location);
 
   product: Product | null = null;
   isLoading = false;
   errorMessage = '';
 
   goBack(): void {
-    this.router.navigate(['/products']);
+    this.location.back();
   }
 
   ngOnInit(): void {
