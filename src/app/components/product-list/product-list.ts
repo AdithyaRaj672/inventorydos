@@ -32,7 +32,7 @@ import { ConfirmDialogComponent } from '../shared/confirm-dialog';
     MatTooltipModule
   ],
   templateUrl: './product-list.html',
-  styleUrls: './product-list.css'
+  styleUrls: ['./product-list.css']
 })
 export class ProductListComponent implements OnInit {
   private inventoryService = inject(InventoryService);
