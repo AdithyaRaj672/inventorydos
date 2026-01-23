@@ -1,44 +1,52 @@
 # Inventorydos - Inventory Management System
 
-A complete Angular-based inventory management system with full CRUD operations for products, suppliers, and orders. Built with Angular 20, TypeScript, and JSON Server for mock API.
+A complete Angular-based inventory management system with full CRUD operations for products, suppliers, and orders. Built with Angular 20, TypeScript, Angular Material Design, and JSON Server for mock API.
 
 ## Features
 
 ### 📊 Dashboard
-- Real-time metrics (Total Products, Inventory Value, Low Stock Items, Pending Orders)
-- Low stock product alerts
+- Real-time metrics with Material Cards (Total Products, Inventory Value, Low Stock Items, Pending Orders)
+- Material Icons for visual indicators
+- Low stock product alerts with Material Chips
 - Recent orders overview
-- Quick action buttons for common tasks
+- Quick action buttons with Material Design
 
 ### 📦 Product Management
-- View all products in a comprehensive table
-- Filter by all products or low stock items
-- View detailed product information
-- Delete products with confirmation
+- Material Table with sortable columns
+- Material Tabs for filtering (All Products / Low Stock Items)
+- Material Dialog with Reactive Forms for add/edit operations
+- Form validation with error messages
+- Material SnackBar notifications
+- View detailed product information with Material Cards
+- Material Tooltips on action buttons
 - Visual highlighting for low stock items
 
 ### 🏢 Supplier Management
-- Complete supplier directory
-- Add new suppliers with contact information
-- Edit existing supplier details
-- Delete suppliers with confirmation
-- Clickable email and phone links for quick contact
+- Material Table with complete CRUD operations
+- Material Dialog with Reactive Forms and validation
+- Add, edit, and delete suppliers with confirmation dialogs
+- Material SnackBar for user feedback
+- Responsive form design with media queries
 
 ### 📋 Order Tracking
-- View all purchase orders with status filtering
-- Pending orders tab with order count
-- Delivered orders tab with order count
-- Mark orders as delivered
-- Delete orders with confirmation
-- Color-coded rows for easy status identification
+- Material Table with status visualization
+- Material Tabs for filtering (All / Pending / Delivered)
+- Material Chips with icons for order status
+- Mark orders as delivered functionality
+- Delete orders with Material confirmation dialog
+- Real-time order status updates
 
 ### 🎨 UI/UX Features
+- **Angular Material Design** throughout the application
+- Material Toolbar for navigation with RouterLink active states
+- Material Progress Spinners for loading states
+- Material SnackBar for user notifications
+- Material Dialogs for confirmations and forms
+- Material Icons for visual clarity
 - Responsive grid-based layout
-- Professional styling with gradients and hover effects
-- Interactive buttons with visual feedback
-- Clean navigation bar with easy access to all sections
 - Tab-based filtering interfaces
-- Form validation and error handling
+- Reactive Forms with comprehensive validation
+- Professional Material Design theme (Azure Blue)
 
 ## Project Structure
 
@@ -47,10 +55,20 @@ src/
 ├── app/
 │   ├── components/
 │   │   ├── product-list/
+│   │   │   ├── product-list.ts
+│   │   │   ├── product-list.html
+│   │   │   ├── product-list.css
+│   │   │   └── product-form-dialog.ts
 │   │   ├── product-detail/
 │   │   ├── supplier-list/
+│   │   │   ├── supplier-list.ts
+│   │   │   ├── supplier-list.html
+│   │   │   ├── supplier-list.css
+│   │   │   └── supplier-form-dialog.ts
 │   │   ├── order-tracker/
-│   │   └── dashboard/
+│   │   ├── dashboard/
+│   │   └── shared/
+│   │       └── confirm-dialog.ts
 │   ├── services/
 │   │   └── inventory.service.ts
 │   ├── models/
@@ -64,6 +82,7 @@ src/
 │   ├── app.ts
 │   ├── app.html
 │   ├── app.css
+│   ├── app.config.ts
 │   └── app.routes.ts
 ├── main.ts
 └── styles.css
@@ -73,12 +92,15 @@ db.json (Mock data)
 ## Technology Stack
 
 - **Framework**: Angular 20 (Standalone Components)
-- **Language**: TypeScript
-- **Styling**: CSS3 with gradients and responsive grid
+- **Language**: TypeScript (with strict typing)
+- **UI Library**: Angular Material Design (@angular/material v20.2)
+- **Styling**: Angular Material theme + Custom CSS3
 - **State Management**: RxJS Observables
 - **API**: JSON Server (Mock REST API)
-- **Forms**: Template-driven forms with two-way binding
-- **Routing**: Angular Router with lazy loading
+- **Forms**: Reactive Forms with validation
+- **Routing**: Angular Router
+- **HTTP**: HttpClient with Interceptors
+- **Animations**: @angular/animations
 
 ## Development server
 

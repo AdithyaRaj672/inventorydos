@@ -1,75 +1,108 @@
 <div class="product-list-container">
   <div class="header-section">
-    <h2>Products</h2>
-    <a routerLink="/products" class="add-button">+ Add New Product</a>
+    <h2><mat-icon>inventory</mat-icon> Products</h2>
+    <button mat-raised-button color="primary" (click)="openAddDialog()">
+      <mat-icon>add</mat-icon> Add New Product
+    </button>
   </div>
 
   <!-- Filter Tabs -->
-  <div class="filter-tabs">
-    <button
-      [class.active]="selectedFilter === 'all'"
-      (click)="setFilter('all')"
-      class="filter-btn"
-    >
-      All Products
-    </button>
-    <button
-      [class.active]="selectedFilter === 'lowStock'"
-      (click)="setFilter('lowStock')"
-      class="filter-btn"
-    >
-      Low Stock Items
-    </button>
-  </div>
+  <mat-tab-group (selectedIndexChange)="setFilter($event === 0 ? 'all' : 'lowStock')" class="filter-tabs">
+    <mat-tab label="All Products"></mat-tab>
+    <mat-tab label="Low Stock Items"></mat-tab>
+  </mat-tab-group>
 
   <!-- Loading State -->
   <div *ngIf="isLoading" class="loading">
-    <p>Loading products...</p>
+    <mat-spinner></mat-spinner>
   </div>
 
   <!-- Error State -->
   <div *ngIf="errorMessage" class="error-message">
+    <mat-icon>error</mat-icon>
     <p>{{ errorMessage }}</p>
   </div>
 
   <!-- Products Table -->
-  <div *ngIf="!isLoading && getFilteredProducts().length > 0" class="products-table">
-    <table>
-      <thead>
-        <tr>
-          <th>Product Name</th>
-          <th>Description</th>
-          <th>Price</th>
-          <th>Quantity</th>
-          <th>Reorder Level</th>
-          <th>Supplier</th>
-          <th>Status</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let product of getFilteredProducts()" [class.low-stock]="isLowStock(product)">
-          <td><strong>{{ product.name }}</strong></td>
-          <td>{{ product.description }}</td>
-          <td>{{ product.price | currency }}</td>
-          <td>{{ product.quantity }}</td>
-          <td>{{ product.reorderLevel }}</td>
-          <td>{{ product.supplier }}</td>
-          <td>
-            <span *ngIf="isLowStock(product)" class="low-stock-badge">Low Stock</span>
-            <span *ngIf="!isLowStock(product)" class="in-stock-badge">In Stock</span>
-          </td>
-          <td>
-            <a [routerLink]="['/products', product.id]" class="action-btn view-btn">View</a>
-            <button (click)="deleteProduct(product.id)" class="action-btn delete-btn">Delete</button>
-          </td>
-        </tr>
-      </tbody>
+  <div *ngIf="!isLoading && getFilteredProducts().length > 0" class="products-table-container">
+    <table mat-table [dataSource]="getFilteredProducts()" class="mat-elevation-z2">
+      <!-- Name Column -->
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef>Product Name</th>
+        <td mat-cell *matCellDef="let product"><strong>{{ product.name }}</strong></td>
+      </ng-container>
+
+      <!-- Description Column -->
+      <ng-container matColumnDef="description">
+        <th mat-header-cell *matHeaderCellDef>Description</th>
+        <td mat-cell *matCellDef="let product">{{ product.description }}</td>
+      </ng-container>
+
+      <!-- Price Column -->
+      <ng-container matColumnDef="price">
+        <th mat-header-cell *matHeaderCellDef>Price</th>
+        <td mat-cell *matCellDef="let product">{{ product.price | currency }}</td>
+      </ng-container>
+
+      <!-- Quantity Column -->
+      <ng-container matColumnDef="quantity">
+        <th mat-header-cell *matHeaderCellDef>Quantity</th>
+        <td mat-cell *matCellDef="let product">
+          <mat-chip [color]="isLowStock(product) ? 'warn' : 'accent'" selected>
+            {{ product.quantity }}
+          </mat-chip>
+        </td>
+      </ng-container>
+
+      <!-- Reorder Level Column -->
+      <ng-container matColumnDef="reorderLevel">
+        <th mat-header-cell *matHeaderCellDef>Reorder Level</th>
+        <td mat-cell *matCellDef="let product">{{ product.reorderLevel }}</td>
+      </ng-container>
+
+      <!-- Supplier Column -->
+      <ng-container matColumnDef="supplier">
+        <th mat-header-cell *matHeaderCellDef>Supplier</th>
+        <td mat-cell *matCellDef="let product">{{ product.supplier }}</td>
+      </ng-container>
+
+      <!-- Status Column -->
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef>Status</th>
+        <td mat-cell *matCellDef="let product">
+          <mat-chip *ngIf="isLowStock(product)" color="warn" selected>
+            <mat-icon>warning</mat-icon> Low Stock
+          </mat-chip>
+          <mat-chip *ngIf="!isLowStock(product)" color="accent" selected>
+            <mat-icon>check_circle</mat-icon> In Stock
+          </mat-chip>
+        </td>
+      </ng-container>
+
+      <!-- Actions Column -->
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>Actions</th>
+        <td mat-cell *matCellDef="let product" class="actions-cell">
+          <button mat-icon-button color="primary" [routerLink]="['/products', product.id]" matTooltip="View Details">
+            <mat-icon>visibility</mat-icon>
+          </button>
+          <button mat-icon-button color="accent" (click)="openEditDialog(product)" matTooltip="Edit">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button color="warn" (click)="deleteProduct(product)" matTooltip="Delete">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;" [class.low-stock-row]="isLowStock(row)"></tr>
     </table>
   </div>
 
   <!-- Empty State -->
   <div *ngIf="!isLoading && getFilteredProducts().length === 0 && !errorMessage" class="empty-state">
+    <mat-icon>inbox</mat-icon>
     <p>No products found.</p>
   </div>
 </div>

@@ -1,15 +1,30 @@
-<!-- Navigation Bar -->
-<nav class="navbar">
-  <div class="nav-container">
-    <a href="/dashboard" class="nav-brand">📦 Inventory System</a>
-    <ul class="nav-menu">
-      <li><a href="/dashboard">Dashboard</a></li>
-      <li><a href="/products">Products</a></li>
-      <li><a href="/suppliers">Suppliers</a></li>
-      <li><a href="/orders">Orders</a></li>
-    </ul>
-  </div>
-</nav>
+<mat-toolbar color="primary" class="navbar">
+  <mat-toolbar-row>
+    <button mat-icon-button routerLink="/dashboard">
+      <mat-icon>inventory_2</mat-icon>
+    </button>
+    <span class="nav-brand">Inventory Management System</span>
+    <span class="spacer"></span>
+    <nav class="nav-menu">
+      <button mat-button routerLink="/dashboard" routerLinkActive="active">
+        <mat-icon>dashboard</mat-icon>
+        Dashboard
+      </button>
+      <button mat-button routerLink="/products" routerLinkActive="active">
+        <mat-icon>inventory</mat-icon>
+        Products
+      </button>
+      <button mat-button routerLink="/suppliers" routerLinkActive="active">
+        <mat-icon>business</mat-icon>
+        Suppliers
+      </button>
+      <button mat-button routerLink="/orders" routerLinkActive="active">
+        <mat-icon>shopping_cart</mat-icon>
+        Orders
+      </button>
+    </nav>
+  </mat-toolbar-row>
+</mat-toolbar>
 
 <!-- Main Content -->
 <main class="main-content">

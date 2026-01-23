@@ -1,19 +1,43 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { MatTableModule } from '@angular/material/table';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { InventoryService } from '../../services/inventory.service';
 import { Order } from '../../models/order.model';
+import { ConfirmDialogComponent } from '../shared/confirm-dialog';
 
 @Component({
   selector: 'app-order-tracker',
   standalone: true,
-  imports: [CommonModule],
+  imports: [
+    CommonModule,
+    MatTableModule,
+    MatButtonModule,
+    MatIconModule,
+    MatChipsModule,
+    MatProgressSpinnerModule,
+    MatSnackBarModule,
+    MatTabsModule,
+    MatTooltipModule,
+    MatDialogModule
+  ],
   templateUrl: './order-tracker.html',
   styleUrl: './order-tracker.css'
 })
 export class OrderTrackerComponent implements OnInit {
   private inventoryService = inject(InventoryService);
+  private snackBar = inject(MatSnackBar);
+  private dialog = inject(MatDialog);
 
   orders: Order[] = [];
+  displayedColumns: string[] = ['id', 'productId', 'quantity', 'orderDate', 'expectedDelivery', 'supplier', 'status', 'actions'];
   isLoading = false;
   errorMessage = '';
   activeTab: 'all' | 'pending' | 'delivered' = 'all';
@@ -32,9 +56,10 @@ export class OrderTrackerComponent implements OnInit {
         this.isLoading = false;
       },
       error: (err) => {
-        this.errorMessage = 'Failed to load orders.';
+        this.errorMessage = 'Failed to load orders. Please try again.';
         this.isLoading = false;
         console.error('Error loading orders:', err);
+        this.snackBar.open(this.errorMessage, 'Close', { duration: 5000 });
       }
     });
   }
@@ -46,10 +71,6 @@ export class OrderTrackerComponent implements OnInit {
       return this.orders.filter((o) => o.status === 'delivered');
     }
     return this.orders;
-  }
-
-  getStatusClass(status: string): string {
-    return status === 'pending' ? 'pending' : 'delivered';
   }
 
   getPendingCount(): number {
@@ -64,19 +85,31 @@ export class OrderTrackerComponent implements OnInit {
     this.activeTab = tab;
   }
 
-  deleteOrder(id: number): void {
-    if (confirm('Are you sure you want to delete this order?')) {
-      this.inventoryService.deleteOrder(id).subscribe({
-        next: () => {
-          this.orders = this.orders.filter(o => o.id !== id);
-          alert('Order deleted successfully');
-        },
-        error: (err) => {
-          alert('Failed to delete order');
-          console.error('Error deleting order:', err);
-        }
-      });
-    }
+  deleteOrder(order: Order): void {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: {
+        title: 'Delete Order',
+        message: `Are you sure you want to delete order #${order.id}?`,
+        confirmText: 'Delete',
+        cancelText: 'Cancel'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.inventoryService.deleteOrder(order.id).subscribe({
+          next: () => {
+            this.loadOrders();
+            this.snackBar.open('Order deleted successfully', 'Close', { duration: 3000 });
+          },
+          error: (err) => {
+            console.error('Error deleting order:', err);
+            this.snackBar.open('Failed to delete order', 'Close', { duration: 5000 });
+          }
+        });
+      }
+    });
   }
 
   markAsDelivered(order: Order): void {
@@ -87,11 +120,11 @@ export class OrderTrackerComponent implements OnInit {
         if (index !== -1) {
           this.orders[index].status = 'delivered';
         }
-        alert('Order marked as delivered');
+        this.snackBar.open('Order marked as delivered', 'Close', { duration: 3000 });
       },
       error: (err) => {
-        alert('Failed to update order');
         console.error('Error updating order:', err);
+        this.snackBar.open('Failed to update order', 'Close', { duration: 5000 });
       }
     });
   }

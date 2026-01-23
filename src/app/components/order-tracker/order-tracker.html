@@ -1,93 +1,141 @@
 <div class="order-tracker-container">
-  <h2>📋 Order Tracker</h2>
-
-  <!-- Tab Navigation -->
-  <div class="tabs">
-    <button
-      [class.active]="activeTab === 'all'"
-      (click)="setTab('all')"
-      class="tab-button"
-    >
-      All Orders ({{ orders.length }})
-    </button>
-    <button
-      [class.active]="activeTab === 'pending'"
-      (click)="setTab('pending')"
-      class="tab-button"
-    >
-      🔄 Pending ({{ getPendingCount() }})
-    </button>
-    <button
-      [class.active]="activeTab === 'delivered'"
-      (click)="setTab('delivered')"
-      class="tab-button"
-    >
-      ✓ Delivered ({{ getDeliveredCount() }})
-    </button>
+  <div class="header-section">
+    <h2>Order Tracker</h2>
   </div>
 
+  <!-- Tab Navigation -->
+  <mat-tab-group class="order-tabs" (selectedIndexChange)="setTab($event === 0 ? 'all' : $event === 1 ? 'pending' : 'delivered')">
+    <mat-tab label="All Orders ({{ orders.length }})"></mat-tab>
+    <mat-tab label="Pending ({{ getPendingCount() }})"></mat-tab>
+    <mat-tab label="Delivered ({{ getDeliveredCount() }})"></mat-tab>
+  </mat-tab-group>
+
   <!-- Loading State -->
-  <div *ngIf="isLoading" class="loading">
+  <div *ngIf="isLoading" class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
     <p>Loading orders...</p>
   </div>
 
   <!-- Error State -->
-  <div *ngIf="errorMessage" class="error-message">
+  <div *ngIf="errorMessage && !isLoading" class="error-message">
+    <mat-icon>error</mat-icon>
     <p>{{ errorMessage }}</p>
   </div>
 
   <!-- Orders Table -->
-  <div *ngIf="!isLoading && getFilteredOrders().length > 0" class="orders-table">
-    <table>
-      <thead>
-        <tr>
-          <th>Order ID</th>
-          <th>Product ID</th>
-          <th>Quantity</th>
-          <th>Order Date</th>
-          <th>Expected Delivery</th>
-          <th>Supplier</th>
-          <th>Status</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let order of getFilteredOrders()" [class]="'order-row ' + getStatusClass(order.status)">
-          <td><strong>#{{ order.id }}</strong></td>
-          <td>{{ order.productId }}</td>
-          <td><span class="qty-badge">{{ order.quantity }}</span></td>
-          <td>{{ order.orderDate | date: 'MMM dd, yyyy' }}</td>
-          <td>{{ order.expectedDelivery | date: 'MMM dd, yyyy' }}</td>
-          <td>{{ order.supplier }}</td>
-          <td>
-            <span [class]="'status ' + getStatusClass(order.status)">
-              {{ order.status | uppercase }}
-            </span>
-          </td>
-          <td>
-            <button
-              *ngIf="order.status === 'pending'"
-              (click)="markAsDelivered(order)"
-              class="action-btn deliver-btn"
-              title="Mark as Delivered"
-            >
-              ✓ Deliver
-            </button>
-            <button
-              (click)="deleteOrder(order.id)"
-              class="action-btn delete-btn"
-              title="Delete Order"
-            >
-              🗑 Delete
-            </button>
-          </td>
-        </tr>
-      </tbody>
+  <div *ngIf="!isLoading && getFilteredOrders().length > 0" class="table-container">
+    <table mat-table [dataSource]="getFilteredOrders()" class="orders-table">
+      <!-- Order ID Column -->
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef>
+          <mat-icon class="column-icon">tag</mat-icon>
+          Order ID
+        </th>
+        <td mat-cell *matCellDef="let order">
+          <strong>#{{ order.id }}</strong>
+        </td>
+      </ng-container>
+
+      <!-- Product ID Column -->
+      <ng-container matColumnDef="productId">
+        <th mat-header-cell *matHeaderCellDef>
+          <mat-icon class="column-icon">inventory_2</mat-icon>
+          Product ID
+        </th>
+        <td mat-cell *matCellDef="let order">{{ order.productId }}</td>
+      </ng-container>
+
+      <!-- Quantity Column -->
+      <ng-container matColumnDef="quantity">
+        <th mat-header-cell *matHeaderCellDef>
+          <mat-icon class="column-icon">shopping_cart</mat-icon>
+          Quantity
+        </th>
+        <td mat-cell *matCellDef="let order">
+          <mat-chip class="quantity-chip">{{ order.quantity }}</mat-chip>
+        </td>
+      </ng-container>
+
+      <!-- Order Date Column -->
+      <ng-container matColumnDef="orderDate">
+        <th mat-header-cell *matHeaderCellDef>
+          <mat-icon class="column-icon">event</mat-icon>
+          Order Date
+        </th>
+        <td mat-cell *matCellDef="let order">{{ order.orderDate | date: 'MMM dd, yyyy' }}</td>
+      </ng-container>
+
+      <!-- Expected Delivery Column -->
+      <ng-container matColumnDef="expectedDelivery">
+        <th mat-header-cell *matHeaderCellDef>
+          <mat-icon class="column-icon">local_shipping</mat-icon>
+          Expected Delivery
+        </th>
+        <td mat-cell *matCellDef="let order">{{ order.expectedDelivery | date: 'MMM dd, yyyy' }}</td>
+      </ng-container>
+
+      <!-- Supplier Column -->
+      <ng-container matColumnDef="supplier">
+        <th mat-header-cell *matHeaderCellDef>
+          <mat-icon class="column-icon">business</mat-icon>
+          Supplier
+        </th>
+        <td mat-cell *matCellDef="let order">{{ order.supplier }}</td>
+      </ng-container>
+
+      <!-- Status Column -->
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef>
+          <mat-icon class="column-icon">info</mat-icon>
+          Status
+        </th>
+        <td mat-cell *matCellDef="let order">
+          <mat-chip-set>
+            <mat-chip *ngIf="order.status === 'pending'" class="status-chip pending-chip">
+              <mat-icon>schedule</mat-icon>
+              Pending
+            </mat-chip>
+            <mat-chip *ngIf="order.status === 'delivered'" class="status-chip delivered-chip">
+              <mat-icon>check_circle</mat-icon>
+              Delivered
+            </mat-chip>
+          </mat-chip-set>
+        </td>
+      </ng-container>
+
+      <!-- Actions Column -->
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>Actions</th>
+        <td mat-cell *matCellDef="let order">
+          <button
+            *ngIf="order.status === 'pending'"
+            mat-icon-button
+            color="accent"
+            (click)="markAsDelivered(order)"
+            matTooltip="Mark as delivered"
+            aria-label="Mark as delivered">
+            <mat-icon>check_circle</mat-icon>
+          </button>
+          <button
+            mat-icon-button
+            color="warn"
+            (click)="deleteOrder(order)"
+            matTooltip="Delete order"
+            aria-label="Delete order">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="order-row"></tr>
     </table>
   </div>
 
   <!-- Empty State -->
   <div *ngIf="!isLoading && getFilteredOrders().length === 0 && !errorMessage" class="empty-state">
-    <p>No {{ activeTab === 'all' ? '' : activeTab }} orders found.</p>
+    <mat-icon>inbox</mat-icon>
+    <h3>No {{ activeTab === 'all' ? '' : activeTab }} orders found</h3>
+    <p>{{ activeTab === 'all' ? 'There are no orders yet.' : 'No ' + activeTab + ' orders at the moment.' }}</p>
   </div>
 </div>
