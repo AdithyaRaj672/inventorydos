@@ -6,7 +6,9 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "json-server": "json-server --watch db.json --port 3000",
+    "dev": "concurrently \"npm run json-server\" \"npm start\""
   },
   "prettier": {
     "printWidth": 100,
@@ -42,7 +44,11 @@
     "@types/jasmine": "~5.1.0",
     "concurrently": "^9.2.1",
     "jasmine-core": "~5.9.0",
+<<<<<<< HEAD
     "json-server": "^1.0.0-beta.5",
+=======
+    "json-server": "^0.17.4",
+>>>>>>> 15691144e1abe8551406790aba322170cf130f39
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.2.0",
     "karma-coverage": "~2.2.0",
