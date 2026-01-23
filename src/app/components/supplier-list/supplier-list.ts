@@ -1,32 +1,43 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { MatTableModule } from '@angular/material/table';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { InventoryService } from '../../services/inventory.service';
 import { Supplier } from '../../models/supplier.model';
+import { SupplierFormDialogComponent } from './supplier-form-dialog';
 
 @Component({
   selector: 'app-supplier-list',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [
+    CommonModule,
+    MatTableModule,
+    MatButtonModule,
+    MatIconModule,
+    MatProgressSpinnerModule,
+    MatSnackBarModule,
+    MatDialogModule,
+    MatTabsModule,
+    MatTooltipModule
+  ],
   templateUrl: './supplier-list.html',
   styleUrl: './supplier-list.css'
 })
 export class SupplierListComponent implements OnInit {
   private inventoryService = inject(InventoryService);
+  private snackBar = inject(MatSnackBar);
+  private dialog = inject(MatDialog);
 
   suppliers: Supplier[] = [];
+  displayedColumns: string[] = ['name', 'email', 'phone', 'address', 'actions'];
   isLoading = false;
   errorMessage = '';
-  showForm = false;
-  editingId: number | null = null;
-
-  newSupplier: Supplier = {
-    id: 0,
-    name: '',
-    email: '',
-    phone: '',
-    address: ''
-  };
 
   ngOnInit(): void {
     this.loadSuppliers();
@@ -42,85 +53,71 @@ export class SupplierListComponent implements OnInit {
         this.isLoading = false;
       },
       error: (err) => {
-        this.errorMessage = 'Failed to load suppliers.';
+        this.errorMessage = 'Failed to load suppliers. Please try again.';
         this.isLoading = false;
         console.error('Error loading suppliers:', err);
+        this.snackBar.open(this.errorMessage, 'Close', { duration: 5000 });
       }
     });
   }
 
-  toggleForm(): void {
-    this.showForm = !this.showForm;
-    if (!this.showForm) {
-      this.resetForm();
-    }
+  openAddDialog(): void {
+    const dialogRef = this.dialog.open(SupplierFormDialogComponent, {
+      width: '600px',
+      data: {}
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.inventoryService.addSupplier(result).subscribe({
+          next: () => {
+            this.loadSuppliers();
+            this.snackBar.open('Supplier added successfully', 'Close', { duration: 3000 });
+          },
+          error: (err) => {
+            console.error('Error adding supplier:', err);
+            this.snackBar.open('Failed to add supplier', 'Close', { duration: 5000 });
+          }
+        });
+      }
+    });
   }
 
-  editSupplier(supplier: Supplier): void {
-    this.editingId = supplier.id;
-    this.newSupplier = { ...supplier };
-    this.showForm = true;
+  openEditDialog(supplier: Supplier): void {
+    const dialogRef = this.dialog.open(SupplierFormDialogComponent, {
+      width: '600px',
+      data: { supplier: { ...supplier } }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.inventoryService.updateSupplier(result.id, result).subscribe({
+          next: () => {
+            this.loadSuppliers();
+            this.snackBar.open('Supplier updated successfully', 'Close', { duration: 3000 });
+          },
+          error: (err) => {
+            console.error('Error updating supplier:', err);
+            this.snackBar.open('Failed to update supplier', 'Close', { duration: 5000 });
+          }
+        });
+      }
+    });
   }
 
-  addOrUpdateSupplier(): void {
-    if (!this.newSupplier.name || !this.newSupplier.email) {
-      alert('Please fill in required fields: Name and Email');
-      return;
-    }
-
-    if (this.editingId) {
-      this.inventoryService.updateSupplier(this.editingId, this.newSupplier).subscribe({
+  deleteSupplier(supplier: Supplier): void {
+    if (confirm(`Are you sure you want to delete ${supplier.name}?`)) {
+      this.inventoryService.deleteSupplier(supplier.id).subscribe({
         next: () => {
-          this.loadSuppliers();
-          this.resetForm();
-          this.showForm = false;
-          alert('Supplier updated successfully');
+          this.suppliers = this.suppliers.filter(s => s.id !== supplier.id);
+          this.snackBar.open('Supplier deleted successfully', 'Close', { duration: 3000 });
         },
         error: (err) => {
-          alert('Failed to update supplier');
-          console.error('Error updating supplier:', err);
-        }
-      });
-    } else {
-      this.inventoryService.addSupplier(this.newSupplier).subscribe({
-        next: () => {
-          this.loadSuppliers();
-          this.resetForm();
-          this.showForm = false;
-          alert('Supplier added successfully');
-        },
-        error: (err) => {
-          alert('Failed to add supplier');
-          console.error('Error adding supplier:', err);
-        }
-      });
-    }
-  }
-
-  deleteSupplier(id: number): void {
-    if (confirm('Are you sure you want to delete this supplier?')) {
-      this.inventoryService.deleteSupplier(id).subscribe({
-        next: () => {
-          this.loadSuppliers();
-          alert('Supplier deleted successfully');
-        },
-        error: (err) => {
-          alert('Failed to delete supplier');
           console.error('Error deleting supplier:', err);
+          this.snackBar.open('Failed to delete supplier', 'Close', { duration: 5000 });
         }
       });
     }
-  }
-
-  resetForm(): void {
-    this.newSupplier = {
-      id: 0,
-      name: '',
-      email: '',
-      phone: '',
-      address: ''
-    };
-    this.editingId = null;
   }
 }
 
