@@ -1,0 +1,120 @@
+<div class="supplier-list-container">
+  <div class="header-section">
+    <h2>🏭 Suppliers</h2>
+    <button (click)="toggleForm()" class="add-button">
+      {{ showForm ? '✕ Cancel' : '+ Add New Supplier' }}
+    </button>
+  </div>
+
+  <!-- Add/Edit Supplier Form -->
+  <div *ngIf="showForm" class="supplier-form">
+    <h3>{{ editingId ? '✏️ Edit Supplier' : '➕ Add New Supplier' }}</h3>
+    <form (ngSubmit)="addOrUpdateSupplier()">
+      <div class="form-group">
+        <label for="name">Supplier Name: <span class="required">*</span></label>
+        <input
+          type="text"
+          id="name"
+          [(ngModel)]="newSupplier.name"
+          name="name"
+          placeholder="Enter supplier name"
+          required
+        />
+      </div>
+      <div class="form-group">
+        <label for="email">Email: <span class="required">*</span></label>
+        <input
+          type="email"
+          id="email"
+          [(ngModel)]="newSupplier.email"
+          name="email"
+          placeholder="Enter email address"
+          required
+        />
+      </div>
+      <div class="form-group">
+        <label for="phone">Phone:</label>
+        <input
+          type="text"
+          id="phone"
+          [(ngModel)]="newSupplier.phone"
+          name="phone"
+          placeholder="Enter phone number"
+        />
+      </div>
+      <div class="form-group">
+        <label for="address">Address:</label>
+        <textarea
+          id="address"
+          [(ngModel)]="newSupplier.address"
+          name="address"
+          placeholder="Enter address"
+          rows="3"
+        ></textarea>
+      </div>
+      <div class="form-buttons">
+        <button type="submit" class="submit-button">
+          {{ editingId ? '💾 Update Supplier' : '➕ Add Supplier' }}
+        </button>
+        <button type="button" (click)="toggleForm()" class="cancel-button">
+          Cancel
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading">
+    <p>Loading suppliers...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="errorMessage" class="error-message">
+    <p>{{ errorMessage }}</p>
+  </div>
+
+  <!-- Suppliers Table -->
+  <div *ngIf="!isLoading && suppliers.length > 0" class="suppliers-table">
+    <table>
+      <thead>
+        <tr>
+          <th>Supplier Name</th>
+          <th>Email</th>
+          <th>Phone</th>
+          <th>Address</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let supplier of suppliers">
+          <td><strong>{{ supplier.name }}</strong></td>
+          <td>
+            <a [href]="'mailto:' + supplier.email" class="email-link">
+              {{ supplier.email }}
+            </a>
+          </td>
+          <td>
+            <a *ngIf="supplier.phone" [href]="'tel:' + supplier.phone" class="phone-link">
+              {{ supplier.phone }}
+            </a>
+            <span *ngIf="!supplier.phone" class="no-data-text">—</span>
+          </td>
+          <td>{{ supplier.address || '—' }}</td>
+          <td>
+            <button (click)="editSupplier(supplier)" class="action-btn edit-btn" title="Edit Supplier">
+              ✏️ Edit
+            </button>
+            <button (click)="deleteSupplier(supplier.id)" class="action-btn delete-btn" title="Delete Supplier">
+              🗑 Delete
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!isLoading && suppliers.length === 0 && !errorMessage" class="empty-state">
+    <p>No suppliers found. Click "Add New Supplier" to get started.</p>
+  </div>
+</div>

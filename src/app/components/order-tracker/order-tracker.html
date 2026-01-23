@@ -1,0 +1,93 @@
+<div class="order-tracker-container">
+  <h2>📋 Order Tracker</h2>
+
+  <!-- Tab Navigation -->
+  <div class="tabs">
+    <button
+      [class.active]="activeTab === 'all'"
+      (click)="setTab('all')"
+      class="tab-button"
+    >
+      All Orders ({{ orders.length }})
+    </button>
+    <button
+      [class.active]="activeTab === 'pending'"
+      (click)="setTab('pending')"
+      class="tab-button"
+    >
+      🔄 Pending ({{ getPendingCount() }})
+    </button>
+    <button
+      [class.active]="activeTab === 'delivered'"
+      (click)="setTab('delivered')"
+      class="tab-button"
+    >
+      ✓ Delivered ({{ getDeliveredCount() }})
+    </button>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading">
+    <p>Loading orders...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="errorMessage" class="error-message">
+    <p>{{ errorMessage }}</p>
+  </div>
+
+  <!-- Orders Table -->
+  <div *ngIf="!isLoading && getFilteredOrders().length > 0" class="orders-table">
+    <table>
+      <thead>
+        <tr>
+          <th>Order ID</th>
+          <th>Product ID</th>
+          <th>Quantity</th>
+          <th>Order Date</th>
+          <th>Expected Delivery</th>
+          <th>Supplier</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let order of getFilteredOrders()" [class]="'order-row ' + getStatusClass(order.status)">
+          <td><strong>#{{ order.id }}</strong></td>
+          <td>{{ order.productId }}</td>
+          <td><span class="qty-badge">{{ order.quantity }}</span></td>
+          <td>{{ order.orderDate | date: 'MMM dd, yyyy' }}</td>
+          <td>{{ order.expectedDelivery | date: 'MMM dd, yyyy' }}</td>
+          <td>{{ order.supplier }}</td>
+          <td>
+            <span [class]="'status ' + getStatusClass(order.status)">
+              {{ order.status | uppercase }}
+            </span>
+          </td>
+          <td>
+            <button
+              *ngIf="order.status === 'pending'"
+              (click)="markAsDelivered(order)"
+              class="action-btn deliver-btn"
+              title="Mark as Delivered"
+            >
+              ✓ Deliver
+            </button>
+            <button
+              (click)="deleteOrder(order.id)"
+              class="action-btn delete-btn"
+              title="Delete Order"
+            >
+              🗑 Delete
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!isLoading && getFilteredOrders().length === 0 && !errorMessage" class="empty-state">
+    <p>No {{ activeTab === 'all' ? '' : activeTab }} orders found.</p>
+  </div>
+</div>

@@ -1,0 +1,171 @@
+.order-tracker-container {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+h2 {
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: #333;
+  font-weight: 600;
+}
+
+.tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #eee;
+}
+
+.tab-button {
+  padding: 10px 20px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  color: #666;
+  border-bottom: 3px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.tab-button:hover {
+  color: #333;
+}
+
+.tab-button.active {
+  color: #2196f3;
+  border-bottom-color: #2196f3;
+}
+
+.loading {
+  text-align: center;
+  padding: 40px;
+  font-size: 16px;
+  color: #666;
+}
+
+.error-message {
+  background-color: #f8d7da;
+  color: #721c24;
+  padding: 15px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+  border: 1px solid #f5c6cb;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px;
+  font-size: 16px;
+  color: #999;
+}
+
+.orders-table {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+thead {
+  background-color: #f8f9fa;
+}
+
+th {
+  padding: 12px;
+  text-align: left;
+  font-weight: 600;
+  border-bottom: 2px solid #dee2e6;
+  color: #333;
+  font-size: 14px;
+}
+
+td {
+  padding: 12px;
+  border-bottom: 1px solid #dee2e6;
+  color: #555;
+  font-size: 14px;
+}
+
+tbody tr {
+  transition: background-color 0.2s;
+}
+
+tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+tbody tr.order-row.pending {
+  background-color: #fff9e6;
+}
+
+tbody tr.order-row.delivered {
+  background-color: #e8f5e9;
+}
+
+.qty-badge {
+  display: inline-block;
+  background-color: #e3f2fd;
+  color: #1976d2;
+  padding: 4px 8px;
+  border-radius: 3px;
+  font-weight: 600;
+}
+
+.status {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 3px;
+  font-size: 12px;
+  font-weight: 600;
+  color: white;
+}
+
+.status.pending {
+  background-color: #ff9800;
+}
+
+.status.delivered {
+  background-color: #4caf50;
+}
+
+.action-btn {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 3px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-right: 5px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.action-btn:last-child {
+  margin-right: 0;
+}
+
+.deliver-btn {
+  background-color: #4caf50;
+  color: white;
+}
+
+.deliver-btn:hover {
+  background-color: #45a049;
+}
+
+.delete-btn {
+  background-color: #f44336;
+  color: white;
+}
+
+.delete-btn:hover {
+  background-color: #da190b;
+}
+

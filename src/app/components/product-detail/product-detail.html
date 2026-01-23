@@ -1,0 +1,49 @@
+<div class="product-detail-container">
+  <h2>Product Details</h2>
+
+  <div *ngIf="isLoading" class="loading">
+    <p>Loading product details...</p>
+  </div>
+
+  <div *ngIf="errorMessage" class="error-message">
+    <p>{{ errorMessage }}</p>
+  </div>
+
+  <div *ngIf="product && !isLoading" class="product-details">
+    <div class="detail-card">
+      <div class="detail-row">
+        <label>Product Name:</label>
+        <span>{{ product.name }}</span>
+      </div>
+      <div class="detail-row">
+        <label>Description:</label>
+        <span>{{ product.description }}</span>
+      </div>
+      <div class="detail-row">
+        <label>Price:</label>
+        <span>{{ product.price | currency }}</span>
+      </div>
+      <div class="detail-row">
+        <label>Current Quantity:</label>
+        <span>{{ product.quantity }} units</span>
+      </div>
+      <div class="detail-row">
+        <label>Reorder Level:</label>
+        <span>{{ product.reorderLevel }} units</span>
+      </div>
+      <div class="detail-row">
+        <label>Supplier:</label>
+        <span>{{ product.supplier }}</span>
+      </div>
+      <div class="detail-row">
+        <label>Stock Status:</label>
+        <span *ngIf="isLowStock()" class="low-stock-badge">Low Stock</span>
+        <span *ngIf="!isLowStock()" class="in-stock-badge">In Stock</span>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="!isLoading && !product && !errorMessage" class="empty-state">
+    <p>Product not found.</p>
+  </div>
+</div>

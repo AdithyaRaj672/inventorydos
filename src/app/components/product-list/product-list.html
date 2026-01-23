@@ -1,0 +1,75 @@
+<div class="product-list-container">
+  <div class="header-section">
+    <h2>Products</h2>
+    <a routerLink="/products" class="add-button">+ Add New Product</a>
+  </div>
+
+  <!-- Filter Tabs -->
+  <div class="filter-tabs">
+    <button
+      [class.active]="selectedFilter === 'all'"
+      (click)="setFilter('all')"
+      class="filter-btn"
+    >
+      All Products
+    </button>
+    <button
+      [class.active]="selectedFilter === 'lowStock'"
+      (click)="setFilter('lowStock')"
+      class="filter-btn"
+    >
+      Low Stock Items
+    </button>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading">
+    <p>Loading products...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="errorMessage" class="error-message">
+    <p>{{ errorMessage }}</p>
+  </div>
+
+  <!-- Products Table -->
+  <div *ngIf="!isLoading && getFilteredProducts().length > 0" class="products-table">
+    <table>
+      <thead>
+        <tr>
+          <th>Product Name</th>
+          <th>Description</th>
+          <th>Price</th>
+          <th>Quantity</th>
+          <th>Reorder Level</th>
+          <th>Supplier</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let product of getFilteredProducts()" [class.low-stock]="isLowStock(product)">
+          <td><strong>{{ product.name }}</strong></td>
+          <td>{{ product.description }}</td>
+          <td>{{ product.price | currency }}</td>
+          <td>{{ product.quantity }}</td>
+          <td>{{ product.reorderLevel }}</td>
+          <td>{{ product.supplier }}</td>
+          <td>
+            <span *ngIf="isLowStock(product)" class="low-stock-badge">Low Stock</span>
+            <span *ngIf="!isLowStock(product)" class="in-stock-badge">In Stock</span>
+          </td>
+          <td>
+            <a [routerLink]="['/products', product.id]" class="action-btn view-btn">View</a>
+            <button (click)="deleteProduct(product.id)" class="action-btn delete-btn">Delete</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!isLoading && getFilteredProducts().length === 0 && !errorMessage" class="empty-state">
+    <p>No products found.</p>
+  </div>
+</div>
