@@ -4,14 +4,14 @@ A complete Angular-based inventory management system with full CRUD operations f
 
 ## Features
 
-### 📊 Dashboard
+###  Dashboard
 - Real-time metrics with Material Cards (Total Products, Inventory Value, Low Stock Items, Pending Orders)
 - Material Icons for visual indicators
 - Low stock product alerts with Material Chips
 - Recent orders overview
 - Quick action buttons with Material Design
 
-### 📦 Product Management
+###  Product Management
 - Material Table with sortable columns
 - Material Tabs for filtering (All Products / Low Stock Items)
 - Material Dialog with Reactive Forms for add/edit operations
@@ -21,14 +21,14 @@ A complete Angular-based inventory management system with full CRUD operations f
 - Material Tooltips on action buttons
 - Visual highlighting for low stock items
 
-### 🏢 Supplier Management
+###  Supplier Management
 - Material Table with complete CRUD operations
 - Material Dialog with Reactive Forms and validation
 - Add, edit, and delete suppliers with confirmation dialogs
 - Material SnackBar for user feedback
 - Responsive form design with media queries
 
-### 📋 Order Tracking
+###  Order Tracking
 - Material Table with status visualization
 - Material Tabs for filtering (All / Pending / Delivered)
 - Material Chips with icons for order status
@@ -36,7 +36,7 @@ A complete Angular-based inventory management system with full CRUD operations f
 - Delete orders with Material confirmation dialog
 - Real-time order status updates
 
-### 🎨 UI/UX Features
+###  UI/UX Features
 - **Angular Material Design** throughout the application
 - Material Toolbar for navigation with RouterLink active states
 - Material Progress Spinners for loading states
