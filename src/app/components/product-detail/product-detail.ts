@@ -7,8 +7,9 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatChipsModule } from '@angular/material/chips';
-import { InventoryService } from '../../services/inventory.service';
+import { ProductService } from '../../services/product.service';
 import { Product } from '../../models/product.model';
+import { HighlightLowStockDirective } from '../../directives/highlight-low-stock.directive';
 
 @Component({
   selector: 'app-product-detail',
@@ -19,13 +20,14 @@ import { Product } from '../../models/product.model';
     MatButtonModule,
     MatIconModule,
     MatProgressSpinnerModule,
-    MatChipsModule
+    MatChipsModule,
+    HighlightLowStockDirective
   ],
   templateUrl: './product-detail.html',
   styleUrl: './product-detail.css'
 })
 export class ProductDetailComponent implements OnInit {
-  private inventoryService = inject(InventoryService);
+  private productService = inject(ProductService);
   private route = inject(ActivatedRoute);
   private location = inject(Location);
 
@@ -48,7 +50,7 @@ export class ProductDetailComponent implements OnInit {
     this.isLoading = true;
     this.errorMessage = '';
 
-    this.inventoryService.getProductById(id).subscribe({
+    this.productService.getProductById(id).subscribe({
       next: (data) => {
         this.product = data;
         this.isLoading = false;

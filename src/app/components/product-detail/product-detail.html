@@ -29,12 +29,15 @@
   </mat-card>
 
   <!-- Product Details -->
-  <mat-card *ngIf="product && !isLoading" class="product-card">
+  <mat-card *ngIf="product && !isLoading" class="product-card"
+            appHighlightLowStock
+            [quantity]="product.quantity"
+            [reorderLevel]="product.reorderLevel">
     <mat-card-header>
-      <mat-card-title>{{ product.name }}</mat-card-title>
+      <mat-card-title>{{ product.name | uppercase }}</mat-card-title>
       <mat-card-subtitle>Product Information</mat-card-subtitle>
     </mat-card-header>
-    
+
     <mat-card-content>
       <div class="detail-grid">
         <div class="detail-item">
@@ -73,7 +76,7 @@
           <mat-icon class="detail-icon">business</mat-icon>
           <div class="detail-content">
             <label>Supplier</label>
-            <span>{{ product.supplier }}</span>
+            <span>{{ product.supplier | uppercase }}</span>
           </div>
         </div>
 

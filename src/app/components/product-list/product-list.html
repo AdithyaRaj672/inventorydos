@@ -8,8 +8,8 @@
 
   <!-- Filter Tabs -->
   <mat-tab-group (selectedIndexChange)="setFilter($event === 0 ? 'all' : 'lowStock')" class="filter-tabs">
-    <mat-tab label="All Products"></mat-tab>
-    <mat-tab label="Low Stock Items"></mat-tab>
+    <mat-tab label="All Products ({{ products.length }})"></mat-tab>
+    <mat-tab label="Low Stock ({{ (products | lowStock).length }})"></mat-tab>
   </mat-tab-group>
 
   <!-- Loading State -->
@@ -63,7 +63,7 @@
       <!-- Supplier Column -->
       <ng-container matColumnDef="supplier">
         <th mat-header-cell *matHeaderCellDef>Supplier</th>
-        <td mat-cell *matCellDef="let product">{{ product.supplier }}</td>
+        <td mat-cell *matCellDef="let product">{{ product.supplier | uppercase }}</td>
       </ng-container>
 
       <!-- Status Column -->
@@ -83,7 +83,7 @@
       <ng-container matColumnDef="actions">
         <th mat-header-cell *matHeaderCellDef>Actions</th>
         <td mat-cell *matCellDef="let product" class="actions-cell">
-          <button mat-icon-button color="primary" [routerLink]="['/products', product.id]" matTooltip="View Details">
+          <button mat-icon-button color="primary" [routerLink]="[product.id]" matTooltip="View Details">
             <mat-icon>visibility</mat-icon>
           </button>
           <button mat-icon-button color="accent" (click)="openEditDialog(product)" matTooltip="Edit">
@@ -96,8 +96,20 @@
       </ng-container>
 
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;" [class.low-stock-row]="isLowStock(row)"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"
+          appHighlightLowStock
+          [quantity]="row.quantity"
+          [reorderLevel]="row.reorderLevel">
+      </tr>
     </table>
+
+    <mat-paginator
+      [length]="getTotalFilteredCount()"
+      [pageSize]="pageSize"
+      [pageSizeOptions]="[5, 10, 25, 50]"
+      (page)="onPageChange($event)"
+      aria-label="Select page">
+    </mat-paginator>
   </div>
 
   <!-- Empty State -->
