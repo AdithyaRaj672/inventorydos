@@ -1,29 +1,29 @@
 <mat-toolbar color="primary" class="navbar">
   <mat-toolbar-row>
     <button mat-icon-button routerLink="/dashboard">
-      <mat-icon>inventory_2</mat-icon>
+      <span class="emoji-icon">📦</span>
     </button>
     <span class="nav-brand">Inventory Management System</span>
     <span class="spacer"></span>
     <nav class="nav-menu" *ngIf="authService.isAuthenticated()">
       <button mat-button routerLink="/dashboard" routerLinkActive="active">
-        <mat-icon>dashboard</mat-icon>
+        <span class="emoji-icon">🏠</span>
         Dashboard
       </button>
       <button mat-button routerLink="/products" routerLinkActive="active">
-        <mat-icon>inventory</mat-icon>
+        <span class="emoji-icon">📦</span>
         Products
       </button>
       <button mat-button routerLink="/suppliers" routerLinkActive="active">
-        <mat-icon>business</mat-icon>
+        <span class="emoji-icon">🏢</span>
         Suppliers
       </button>
       <button mat-button routerLink="/orders" routerLinkActive="active">
-        <mat-icon>shopping_cart</mat-icon>
+        <span class="emoji-icon">🛒</span>
         Orders
       </button>
       <button mat-button (click)="authService.logout()">
-        <mat-icon>logout</mat-icon>
+        <span class="emoji-icon">🚪</span>
         Logout
       </button>
     </nav>

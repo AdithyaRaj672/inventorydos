@@ -72,21 +72,11 @@
 }
 
 .suppliers-table th {
-  display: flex;
-  align-items: center;
-  gap: 8px;
   font-weight: 600;
   color: #666;
   font-size: 14px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-}
-
-.column-icon {
-  font-size: 20px;
-  width: 20px;
-  height: 20px;
-  color: #1976d2;
 }
 
 .supplier-row {

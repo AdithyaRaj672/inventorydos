@@ -26,7 +26,7 @@ import { AuthService } from '../../services/auth.service';
       <mat-card class="login-card">
         <mat-card-header>
           <mat-card-title>
-            <mat-icon>inventory_2</mat-icon>
+            <span class="emoji-icon">📦</span>
             Inventory Management System
           </mat-card-title>
           <mat-card-subtitle>Please sign in to continue</mat-card-subtitle>
@@ -42,7 +42,7 @@ import { AuthService } from '../../services/auth.service';
                      required
                      #usernameField="ngModel"
                      placeholder="Enter username">
-              <mat-icon matSuffix>person</mat-icon>
+              <span matSuffix class="emoji-icon field-suffix">👤</span>
               <mat-error *ngIf="usernameField.invalid && usernameField.touched">
                 Username is required
               </mat-error>
@@ -58,7 +58,7 @@ import { AuthService } from '../../services/auth.service';
                      #passwordField="ngModel"
                      placeholder="Enter password">
               <button mat-icon-button matSuffix type="button" (click)="hidePassword = !hidePassword">
-                <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+                <span class="emoji-icon">{{ hidePassword ? '🙈' : '👁️' }}</span>
               </button>
               <mat-error *ngIf="passwordField.invalid && passwordField.touched">
                 Password is required
@@ -66,17 +66,17 @@ import { AuthService } from '../../services/auth.service';
             </mat-form-field>
 
             <div *ngIf="loginError" class="error-message">
-              <mat-icon>error</mat-icon>
+              <span class="emoji-icon">❌</span>
               Invalid username or password
             </div>
 
             <button mat-raised-button color="primary" type="submit" class="full-width login-btn">
-              <mat-icon>login</mat-icon> Sign In
+              <span class="emoji-icon">🔑</span> Sign In
             </button>
           </form>
 
           <p class="demo-hint">
-            <mat-icon>info</mat-icon>
+            <span class="emoji-icon">ℹ️</span>
             Demo credentials: <strong>admin</strong> / <strong>admin123</strong>
           </p>
         </mat-card-content>
@@ -117,6 +117,10 @@ import { AuthService } from '../../services/auth.service';
       font-size: 13px;
       color: #666;
       margin-top: 16px;
+    }
+    .field-suffix {
+      font-size: 16px;
+      margin-right: 4px;
     }
     mat-card-title {
       display: flex;

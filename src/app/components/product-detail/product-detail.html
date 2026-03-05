@@ -1,7 +1,7 @@
 <div class="product-detail-container">
   <div class="header-section">
     <button mat-icon-button (click)="goBack()" class="back-button" aria-label="Go back">
-      <mat-icon>arrow_back</mat-icon>
+      <span class="emoji-icon">⬅️</span>
     </button>
     <h2>Product Details</h2>
   </div>
@@ -16,13 +16,13 @@
   <mat-card *ngIf="errorMessage" class="error-card">
     <mat-card-content>
       <div class="error-content">
-        <mat-icon color="warn">error</mat-icon>
+        <span class="emoji-icon">❌</span>
         <p>{{ errorMessage }}</p>
       </div>
     </mat-card-content>
     <mat-card-actions>
       <button mat-raised-button color="primary" (click)="goBack()">
-        <mat-icon>arrow_back</mat-icon>
+        <span class="emoji-icon">⬅️</span>
         Back to Products
       </button>
     </mat-card-actions>
@@ -41,7 +41,7 @@
     <mat-card-content>
       <div class="detail-grid">
         <div class="detail-item">
-          <mat-icon class="detail-icon">description</mat-icon>
+          <span class="emoji-icon detail-icon">📝</span>
           <div class="detail-content">
             <label>Description</label>
             <span>{{ product.description }}</span>
@@ -49,7 +49,7 @@
         </div>
 
         <div class="detail-item">
-          <mat-icon class="detail-icon">attach_money</mat-icon>
+          <span class="emoji-icon detail-icon">💰</span>
           <div class="detail-content">
             <label>Price</label>
             <span class="price">{{ product.price | currency }}</span>
@@ -57,7 +57,7 @@
         </div>
 
         <div class="detail-item">
-          <mat-icon class="detail-icon">inventory_2</mat-icon>
+          <span class="emoji-icon detail-icon">📦</span>
           <div class="detail-content">
             <label>Current Quantity</label>
             <span>{{ product.quantity }} units</span>
@@ -65,7 +65,7 @@
         </div>
 
         <div class="detail-item">
-          <mat-icon class="detail-icon">notifications</mat-icon>
+          <span class="emoji-icon detail-icon">🔔</span>
           <div class="detail-content">
             <label>Reorder Level</label>
             <span>{{ product.reorderLevel }} units</span>
@@ -73,7 +73,7 @@
         </div>
 
         <div class="detail-item">
-          <mat-icon class="detail-icon">business</mat-icon>
+          <span class="emoji-icon detail-icon">🏢</span>
           <div class="detail-content">
             <label>Supplier</label>
             <span>{{ product.supplier | uppercase }}</span>
@@ -81,17 +81,15 @@
         </div>
 
         <div class="detail-item">
-          <mat-icon class="detail-icon">check_circle</mat-icon>
+          <span class="emoji-icon detail-icon">✅</span>
           <div class="detail-content">
             <label>Stock Status</label>
             <mat-chip-set>
               <mat-chip *ngIf="isLowStock()" class="low-stock-chip">
-                <mat-icon>warning</mat-icon>
-                Low Stock
+                <span class="emoji-icon">⚠️</span> Low Stock
               </mat-chip>
               <mat-chip *ngIf="!isLowStock()" class="in-stock-chip">
-                <mat-icon>check_circle</mat-icon>
-                In Stock
+                <span class="emoji-icon">✅</span> In Stock
               </mat-chip>
             </mat-chip-set>
           </div>
@@ -101,7 +99,7 @@
 
     <mat-card-actions>
       <button mat-raised-button color="primary" (click)="goBack()">
-        <mat-icon>arrow_back</mat-icon>
+        <span class="emoji-icon">⬅️</span>
         Back to Products
       </button>
     </mat-card-actions>
@@ -111,13 +109,13 @@
   <mat-card *ngIf="!isLoading && !product && !errorMessage" class="empty-card">
     <mat-card-content>
       <div class="empty-content">
-        <mat-icon>search_off</mat-icon>
+        <span class="emoji-icon" style="font-size:48px">🔍</span>
         <p>Product not found.</p>
       </div>
     </mat-card-content>
     <mat-card-actions>
       <button mat-raised-button color="primary" (click)="goBack()">
-        <mat-icon>arrow_back</mat-icon>
+        <span class="emoji-icon">⬅️</span>
         Back to Products
       </button>
     </mat-card-actions>
