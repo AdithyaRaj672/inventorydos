@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, ViewChild, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { MatTableModule } from '@angular/material/table';
@@ -10,10 +10,13 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { InventoryService } from '../../services/inventory.service';
+import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { ProductService } from '../../services/product.service';
 import { Product } from '../../models/product.model';
 import { ProductFormDialogComponent } from './product-form-dialog';
 import { ConfirmDialogComponent } from '../shared/confirm-dialog';
+import { LowStockPipe } from '../../pipes/low-stock.pipe';
+import { HighlightLowStockDirective } from '../../directives/highlight-low-stock.directive';
 
 @Component({
   selector: 'app-product-list',
@@ -29,13 +32,16 @@ import { ConfirmDialogComponent } from '../shared/confirm-dialog';
     MatSnackBarModule,
     MatDialogModule,
     MatTabsModule,
-    MatTooltipModule
+    MatTooltipModule,
+    MatPaginatorModule,
+    LowStockPipe,
+    HighlightLowStockDirective
   ],
   templateUrl: './product-list.html',
   styleUrls: ['./product-list.css']
 })
 export class ProductListComponent implements OnInit {
-  private inventoryService = inject(InventoryService);
+  private productService = inject(ProductService);
   private snackBar = inject(MatSnackBar);
   private dialog = inject(MatDialog);
 
@@ -45,6 +51,9 @@ export class ProductListComponent implements OnInit {
   errorMessage = '';
   selectedFilter = 'all';
 
+  pageSize = 10;
+  pageIndex = 0;
+
   ngOnInit(): void {
     this.loadProducts();
   }
@@ -53,10 +62,11 @@ export class ProductListComponent implements OnInit {
     this.isLoading = true;
     this.errorMessage = '';
 
-    this.inventoryService.getProducts().subscribe({
+    this.productService.getProducts().subscribe({
       next: (data) => {
         this.products = data;
         this.isLoading = false;
+        this.pageIndex = 0;
       },
       error: (err) => {
         this.errorMessage = 'Failed to load products. Please try again.';
@@ -84,7 +94,7 @@ export class ProductListComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.inventoryService.deleteProduct(product.id).subscribe({
+        this.productService.deleteProduct(product.id).subscribe({
           next: () => {
             this.loadProducts();
             this.snackBar.open('Product deleted successfully', 'Close', { duration: 3000 });
@@ -98,15 +108,31 @@ export class ProductListComponent implements OnInit {
     });
   }
 
-  getFilteredProducts(): Product[] {
+  getAllFiltered(): Product[] {
     if (this.selectedFilter === 'lowStock') {
       return this.products.filter(p => this.isLowStock(p));
     }
     return this.products;
   }
 
+  getFilteredProducts(): Product[] {
+    const all = this.getAllFiltered();
+    const start = this.pageIndex * this.pageSize;
+    return all.slice(start, start + this.pageSize);
+  }
+
+  getTotalFilteredCount(): number {
+    return this.getAllFiltered().length;
+  }
+
   setFilter(filter: string): void {
     this.selectedFilter = filter;
+    this.pageIndex = 0;
+  }
+
+  onPageChange(event: PageEvent): void {
+    this.pageIndex = event.pageIndex;
+    this.pageSize = event.pageSize;
   }
 
   openAddDialog(): void {
@@ -117,7 +143,7 @@ export class ProductListComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.inventoryService.addProduct(result).subscribe({
+        this.productService.addProduct(result).subscribe({
           next: () => {
             this.loadProducts();
             this.snackBar.open('Product added successfully', 'Close', { duration: 3000 });
@@ -139,7 +165,7 @@ export class ProductListComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.inventoryService.updateProduct(result.id, result).subscribe({
+        this.productService.updateProduct(result.id, result).subscribe({
           next: () => {
             this.loadProducts();
             this.snackBar.open('Product updated successfully', 'Close', { duration: 3000 });

@@ -1,6 +1,9 @@
 <div class="order-tracker-container">
   <div class="header-section">
     <h2>Order Tracker</h2>
+    <button mat-raised-button color="primary" (click)="openAddDialog()">
+      <span class="emoji-icon">➕</span> Add New Order
+    </button>
   </div>
 
   <!-- Tab Navigation -->
@@ -18,7 +21,7 @@
 
   <!-- Error State -->
   <div *ngIf="errorMessage && !isLoading" class="error-message">
-    <mat-icon>error</mat-icon>
+    <span class="emoji-icon">❌</span>
     <p>{{ errorMessage }}</p>
   </div>
 
@@ -28,28 +31,25 @@
       <!-- Order ID Column -->
       <ng-container matColumnDef="id">
         <th mat-header-cell *matHeaderCellDef>
-          <mat-icon class="column-icon">tag</mat-icon>
-          Order ID
+          <span class="th-content"><span class="emoji-icon">🏷️</span> Order ID</span>
         </th>
         <td mat-cell *matCellDef="let order">
           <strong>#{{ order.id }}</strong>
         </td>
       </ng-container>
 
-      <!-- Product ID Column -->
+      <!-- Product Column -->
       <ng-container matColumnDef="productId">
         <th mat-header-cell *matHeaderCellDef>
-          <mat-icon class="column-icon">inventory_2</mat-icon>
-          Product ID
+          <span class="th-content"><span class="emoji-icon">📦</span> Product</span>
         </th>
-        <td mat-cell *matCellDef="let order">{{ order.productId }}</td>
+        <td mat-cell *matCellDef="let order">{{ getProductName(order.productId) }}</td>
       </ng-container>
 
       <!-- Quantity Column -->
       <ng-container matColumnDef="quantity">
         <th mat-header-cell *matHeaderCellDef>
-          <mat-icon class="column-icon">shopping_cart</mat-icon>
-          Quantity
+          <span class="th-content"><span class="emoji-icon">🛒</span> Quantity</span>
         </th>
         <td mat-cell *matCellDef="let order">
           <mat-chip class="quantity-chip">{{ order.quantity }}</mat-chip>
@@ -59,8 +59,7 @@
       <!-- Order Date Column -->
       <ng-container matColumnDef="orderDate">
         <th mat-header-cell *matHeaderCellDef>
-          <mat-icon class="column-icon">event</mat-icon>
-          Order Date
+          <span class="th-content"><span class="emoji-icon">📅</span> Order Date</span>
         </th>
         <td mat-cell *matCellDef="let order">{{ order.orderDate | date: 'MMM dd, yyyy' }}</td>
       </ng-container>
@@ -68,8 +67,7 @@
       <!-- Expected Delivery Column -->
       <ng-container matColumnDef="expectedDelivery">
         <th mat-header-cell *matHeaderCellDef>
-          <mat-icon class="column-icon">local_shipping</mat-icon>
-          Expected Delivery
+          <span class="th-content"><span class="emoji-icon">🚚</span> Expected Delivery</span>
         </th>
         <td mat-cell *matCellDef="let order">{{ order.expectedDelivery | date: 'MMM dd, yyyy' }}</td>
       </ng-container>
@@ -77,27 +75,26 @@
       <!-- Supplier Column -->
       <ng-container matColumnDef="supplier">
         <th mat-header-cell *matHeaderCellDef>
-          <mat-icon class="column-icon">business</mat-icon>
-          Supplier
+          <span class="th-content"><span class="emoji-icon">🏢</span> Supplier</span>
         </th>
-        <td mat-cell *matCellDef="let order">{{ order.supplier }}</td>
+        <td mat-cell *matCellDef="let order">{{ order.supplier | uppercase }}</td>
       </ng-container>
 
       <!-- Status Column -->
       <ng-container matColumnDef="status">
         <th mat-header-cell *matHeaderCellDef>
-          <mat-icon class="column-icon">info</mat-icon>
-          Status
+          <span class="th-content"><span class="emoji-icon">ℹ️</span> Status</span>
         </th>
         <td mat-cell *matCellDef="let order">
           <mat-chip-set>
             <mat-chip *ngIf="order.status === 'pending'" class="status-chip pending-chip">
-              <mat-icon>schedule</mat-icon>
-              Pending
+              <span class="emoji-icon">⏰</span> Pending
             </mat-chip>
             <mat-chip *ngIf="order.status === 'delivered'" class="status-chip delivered-chip">
-              <mat-icon>check_circle</mat-icon>
-              Delivered
+              <span class="emoji-icon">✅</span> Delivered
+            </mat-chip>
+            <mat-chip *ngIf="order.status === 'cancelled'" class="status-chip">
+              <span class="emoji-icon">❌</span> Cancelled
             </mat-chip>
           </mat-chip-set>
         </td>
@@ -108,13 +105,21 @@
         <th mat-header-cell *matHeaderCellDef>Actions</th>
         <td mat-cell *matCellDef="let order">
           <button
+            mat-icon-button
+            color="primary"
+            (click)="openEditDialog(order)"
+            matTooltip="Edit order"
+            aria-label="Edit order">
+            <span class="emoji-icon">✏️</span>
+          </button>
+          <button
             *ngIf="order.status === 'pending'"
             mat-icon-button
             color="accent"
             (click)="markAsDelivered(order)"
             matTooltip="Mark as delivered"
             aria-label="Mark as delivered">
-            <mat-icon>check_circle</mat-icon>
+            <span class="emoji-icon">✅</span>
           </button>
           <button
             mat-icon-button
@@ -122,7 +127,7 @@
             (click)="deleteOrder(order)"
             matTooltip="Delete order"
             aria-label="Delete order">
-            <mat-icon>delete</mat-icon>
+            <span class="emoji-icon">🗑️</span>
           </button>
         </td>
       </ng-container>
@@ -130,12 +135,23 @@
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="order-row"></tr>
     </table>
+
+    <mat-paginator
+      [length]="getFilteredTotal()"
+      [pageSize]="pageSize"
+      [pageSizeOptions]="[5, 10, 25]"
+      (page)="onPageChange($event)"
+      aria-label="Select page">
+    </mat-paginator>
   </div>
 
   <!-- Empty State -->
   <div *ngIf="!isLoading && getFilteredOrders().length === 0 && !errorMessage" class="empty-state">
-    <mat-icon>inbox</mat-icon>
+    <span class="emoji-icon" style="font-size:48px">📬</span>
     <h3>No {{ activeTab === 'all' ? '' : activeTab }} orders found</h3>
     <p>{{ activeTab === 'all' ? 'There are no orders yet.' : 'No ' + activeTab + ' orders at the moment.' }}</p>
+    <button mat-raised-button color="primary" (click)="openAddDialog()">
+      <span class="emoji-icon">➕</span> Add Order
+    </button>
   </div>
 </div>

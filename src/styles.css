@@ -21,17 +21,26 @@ html, body {
   height: 100%;
 }
 
-/* Material icon font */
-.mat-icon {
-  font-family: 'Material Icons';
-  font-weight: normal;
+/* Emoji icon helper */
+.emoji-icon {
   font-style: normal;
-  font-size: 24px;
+  font-size: 18px;
   line-height: 1;
-  letter-spacing: normal;
-  text-transform: none;
-  display: inline-block;
-  white-space: nowrap;
-  word-wrap: normal;
-  direction: ltr;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+  user-select: none;
+}
+
+/* Wrapper for table header cell content (icon + label side-by-side) */
+.th-content {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Consistent gap between emoji and label inside chip-like containers */
+mat-chip .emoji-icon {
+  margin-right: 4px;
 }

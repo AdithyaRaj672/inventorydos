@@ -8,7 +8,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { InventoryService } from '../../services/inventory.service';
+import { SupplierService } from '../../services/supplier.service';
 import { Supplier } from '../../models/supplier.model';
 import { SupplierFormDialogComponent } from './supplier-form-dialog';
 import { ConfirmDialogComponent } from '../shared/confirm-dialog';
@@ -31,7 +31,7 @@ import { ConfirmDialogComponent } from '../shared/confirm-dialog';
   styleUrl: './supplier-list.css'
 })
 export class SupplierListComponent implements OnInit {
-  private inventoryService = inject(InventoryService);
+  private supplierService = inject(SupplierService);
   private snackBar = inject(MatSnackBar);
   private dialog = inject(MatDialog);
 
@@ -48,7 +48,7 @@ export class SupplierListComponent implements OnInit {
     this.isLoading = true;
     this.errorMessage = '';
 
-    this.inventoryService.getSuppliers().subscribe({
+    this.supplierService.getSuppliers().subscribe({
       next: (data) => {
         this.suppliers = data;
         this.isLoading = false;
@@ -70,7 +70,7 @@ export class SupplierListComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.inventoryService.addSupplier(result).subscribe({
+        this.supplierService.addSupplier(result).subscribe({
           next: () => {
             this.loadSuppliers();
             this.snackBar.open('Supplier added successfully', 'Close', { duration: 3000 });
@@ -92,7 +92,7 @@ export class SupplierListComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.inventoryService.updateSupplier(result.id, result).subscribe({
+        this.supplierService.updateSupplier(result.id, result).subscribe({
           next: () => {
             this.loadSuppliers();
             this.snackBar.open('Supplier updated successfully', 'Close', { duration: 3000 });
@@ -119,7 +119,7 @@ export class SupplierListComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.inventoryService.deleteSupplier(supplier.id).subscribe({
+        this.supplierService.deleteSupplier(supplier.id).subscribe({
           next: () => {
             this.loadSuppliers();
             this.snackBar.open('Supplier deleted successfully', 'Close', { duration: 3000 });

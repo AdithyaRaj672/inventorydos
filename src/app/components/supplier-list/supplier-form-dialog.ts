@@ -1,6 +1,6 @@
-import { Component, Inject, inject } from '@angular/core';
+import { Component, Inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, NgForm } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -12,7 +12,7 @@ import { Supplier } from '../../models/supplier.model';
   standalone: true,
   imports: [
     CommonModule,
-    ReactiveFormsModule,
+    FormsModule,
     MatDialogModule,
     MatFormFieldModule,
     MatInputModule,
@@ -21,40 +21,60 @@ import { Supplier } from '../../models/supplier.model';
   template: `
     <h2 mat-dialog-title>{{ data.supplier ? 'Edit Supplier' : 'Add New Supplier' }}</h2>
     <mat-dialog-content>
-      <form [formGroup]="supplierForm" class="supplier-form">
+      <form #supplierForm="ngForm" class="supplier-form" (ngSubmit)="onSave(supplierForm)">
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Supplier Name</mat-label>
-          <input matInput formControlName="name" placeholder="Enter supplier name" required>
-          <mat-error *ngIf="supplierForm.get('name')?.hasError('required')">
+          <input matInput
+                 name="name"
+                 [(ngModel)]="model.name"
+                 required
+                 #nameField="ngModel"
+                 placeholder="Enter supplier name">
+          <mat-error *ngIf="nameField.invalid && nameField.touched">
             Supplier name is required
           </mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Email</mat-label>
-          <input matInput type="email" formControlName="email" placeholder="Enter email address" required>
-          <mat-error *ngIf="supplierForm.get('email')?.hasError('required')">
+          <input matInput
+                 type="email"
+                 name="email"
+                 [(ngModel)]="model.email"
+                 required
+                 email
+                 #emailField="ngModel"
+                 placeholder="Enter email address">
+          <mat-error *ngIf="emailField.hasError('required') && emailField.touched">
             Email is required
           </mat-error>
-          <mat-error *ngIf="supplierForm.get('email')?.hasError('email')">
+          <mat-error *ngIf="emailField.hasError('email') && emailField.touched">
             Please enter a valid email address
           </mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Phone</mat-label>
-          <input matInput type="tel" formControlName="phone" placeholder="Enter phone number">
+          <input matInput
+                 type="tel"
+                 name="phone"
+                 [(ngModel)]="model.phone"
+                 placeholder="Enter phone number">
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Address</mat-label>
-          <textarea matInput formControlName="address" placeholder="Enter address" rows="3"></textarea>
+          <textarea matInput
+                    name="address"
+                    [(ngModel)]="model.address"
+                    placeholder="Enter address"
+                    rows="3"></textarea>
         </mat-form-field>
       </form>
     </mat-dialog-content>
     <mat-dialog-actions align="end">
-      <button mat-button (click)="onCancel()">Cancel</button>
-      <button mat-raised-button color="primary" [disabled]="!supplierForm.valid" (click)="onSave()">
+      <button mat-button type="button" (click)="onCancel()">Cancel</button>
+      <button mat-raised-button color="primary" type="submit" [disabled]="supplierForm.invalid" (click)="onSave(supplierForm)">
         {{ data.supplier ? 'Update' : 'Create' }}
       </button>
     </mat-dialog-actions>
@@ -91,33 +111,28 @@ import { Supplier } from '../../models/supplier.model';
   `]
 })
 export class SupplierFormDialogComponent {
-  private fb = inject(FormBuilder);
-  supplierForm: FormGroup;
+  model: Supplier;
 
   constructor(
     public dialogRef: MatDialogRef<SupplierFormDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: { supplier?: Supplier }
   ) {
-    this.supplierForm = this.fb.group({
-      name: [data.supplier?.name || '', Validators.required],
-      email: [data.supplier?.email || '', [Validators.required, Validators.email]],
-      phone: [data.supplier?.phone || ''],
-      address: [data.supplier?.address || '']
-    });
+    this.model = {
+      id: data.supplier?.id || 0,
+      name: data.supplier?.name || '',
+      email: data.supplier?.email || '',
+      phone: data.supplier?.phone || '',
+      address: data.supplier?.address || ''
+    };
   }
 
   onCancel(): void {
     this.dialogRef.close();
   }
 
-  onSave(): void {
-    if (this.supplierForm.valid) {
-      const formValue = this.supplierForm.value;
-      const supplier: Supplier = {
-        id: this.data.supplier?.id || 0,
-        ...formValue
-      };
-      this.dialogRef.close(supplier);
+  onSave(form: NgForm): void {
+    if (form.valid) {
+      this.dialogRef.close({ ...this.model });
     }
   }
 }

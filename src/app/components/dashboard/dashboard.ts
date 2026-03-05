@@ -6,7 +6,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatChipsModule } from '@angular/material/chips';
-import { InventoryService } from '../../services/inventory.service';
+import { ProductService } from '../../services/product.service';
+import { OrderService } from '../../services/order.service';
 import { Product } from '../../models/product.model';
 import { Order } from '../../models/order.model';
 
@@ -18,7 +19,8 @@ import { Order } from '../../models/order.model';
   styleUrl: './dashboard.css'
 })
 export class DashboardComponent implements OnInit {
-  private inventoryService = inject(InventoryService);
+  private productService = inject(ProductService);
+  private orderService = inject(OrderService);
 
   products: Product[] = [];
   orders: Order[] = [];
@@ -36,14 +38,14 @@ export class DashboardComponent implements OnInit {
   loadDashboardData(): void {
     this.isLoading = true;
 
-    this.inventoryService.getProducts().subscribe({
+    this.productService.getProducts().subscribe({
       next: (data) => {
         this.products = data;
         this.calculateMetrics();
       }
     });
 
-    this.inventoryService.getOrders().subscribe({
+    this.orderService.getOrders().subscribe({
       next: (data) => {
         this.orders = data;
         this.pendingOrders = this.orders.filter(
